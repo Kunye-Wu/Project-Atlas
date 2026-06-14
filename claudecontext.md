@@ -63,3 +63,17 @@ Project-Atlas/
 ## How to use this file
 Paste this at the start of every Claude session to restore full context.
 Update the progress log and "next session goals" at the end of each session.
+
+### June 13 — Phase II: Atlas Gets a Brain
+- Exported Hevy workout data (3934 sets, Oct 2025 → Apr 2026)
+- Built load_data.py — reads and summarizes raw CSV
+- Built build_database.py — creates atlas.db (SQLite)
+- Built analyze.py — first real training insights
+- Confirmed PRs: Squat 420, Bench 335, Trap Bar Deadlift 455
+- Squat peaked at 405 in March, slight dip since — worth investigating
+
+## Next session goals
+- Fix weekly volume date parsing (strftime issue)
+- Build PR detection logic — find true 1RM dates
+- Start Streamlit dashboard — make Atlas visual
+- Begin plateau detection algorithm
