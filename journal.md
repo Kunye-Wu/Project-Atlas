@@ -28,3 +28,27 @@ What I learned:
 - Build PR detection logic — find true 1RM dates
 - Start Streamlit dashboard — make Atlas visual
 - Begin plateau detection algorithm
+
+### June 14 — Phase III: Atlas Goes Visual
+
+What I did:
+- Installed Streamlit
+- Built frontend/dashboard.py — first visual dashboard
+- Live dashboard running at localhost:8501
+- Squat progression chart working with real dates (Sep 2025 → Jun 2026)
+- Bench press progression chart working
+- Volume bar chart by workout type
+- PR metric cards across the top (420 squat, 335 bench, 455 trap bar)
+- Debugged date parsing issues — learned about pandas datetime formats
+
+What I learned:
+- Streamlit turns Python scripts into web apps instantly
+- SQLite queries feed directly into charts
+- Debugging is part of building — every error teaches something
+- A working dashboard changes how the project feels
+
+Next step:
+- Add AI coaching layer — ask Atlas questions about your training
+- Add exercise selector dropdown
+- Begin Claude API integration for conversational coaching
+- Plateau detection algorithm
