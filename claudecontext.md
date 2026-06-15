@@ -77,3 +77,16 @@ Update the progress log and "next session goals" at the end of each session.
 - Build PR detection logic — find true 1RM dates
 - Start Streamlit dashboard — make Atlas visual
 - Begin plateau detection algorithm
+
+### June 14 — Phase III: Atlas Goes Visual
+- Built frontend/dashboard.py with Streamlit
+- Live dashboard at localhost:8501
+- Squat + bench progression charts working with real dates
+- Volume bar chart by workout type
+- PR metric cards: 420 squat, 335 bench, 455 trap bar
+
+## Next session goals
+- Add AI coaching layer — ask Atlas questions about your training
+- Add exercise selector dropdown (pick any lift to see its progression)
+- Add plateau detection logic
+- Begin Claude API integration for conversational coaching
