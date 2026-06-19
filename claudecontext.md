@@ -90,3 +90,24 @@ Update the progress log and "next session goals" at the end of each session.
 - Add exercise selector dropdown (pick any lift to see its progression)
 - Add plateau detection logic
 - Begin Claude API integration for conversational coaching
+
+### June 18 — Phase IV: Atlas Gets a Voice
+- Got Claude API key, stored safely in .env (gitignored)
+- Installed anthropic + python-dotenv libraries
+- Built ai/coach.py — Atlas can now answer questions using Claude API
+- Connected real training data (PRs + recent sets) as context for Claude
+- First successful conversation: asked Atlas why squat stalled
+- Atlas gave an honest, data-grounded answer — flagged data limitations,
+  spotted squat absence in recent logs vs. chest-heavy sessions
+- Confirmed: Atlas reasons intelligently, not just regurgitating stats
+
+## Known issues to fix
+- "Last 100 sets" window is too narrow/recency-biased — need time-based
+  window instead (e.g. last 90 days) or per-exercise history pulls
+- Raw Hevy export data may have inconsistencies worth auditing
+
+## Next session goals
+- Fix data window in coach.py (time-based, not row-count-based)
+- Add per-exercise history fetching so Atlas can see full lift timelines
+- Wire coach.py into the Streamlit dashboard — chat interface in browser
+- Audit raw Hevy data for inconsistencies

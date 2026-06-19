@@ -52,3 +52,27 @@ Next step:
 - Add exercise selector dropdown
 - Begin Claude API integration for conversational coaching
 - Plateau detection algorithm
+
+### June 18 — Phase IV: Atlas Gets a Voice
+
+What I did:
+- Set up Claude API key and secured it in .env
+- Installed anthropic + python-dotenv
+- Built ai/coach.py — first AI coaching script
+- Had my first real conversation with Atlas
+
+What I learned:
+- API keys need the exact ENV_VAR=value format, no shortcuts
+- .env files keep secrets out of GitHub — critical habit
+- Atlas isn't just printing stats — it's reasoning over real data
+  and being honest about what it doesn't know
+- Data quality matters as much as the AI logic — garbage in, garbage out
+
+What stood out:
+- Atlas correctly identified that recent logs were chest-heavy and
+  squats were nearly absent — a real coaching insight, not a guess
+- This is the first moment Project Atlas felt genuinely "alive"
+
+Next step:
+- Fix the data window so Atlas sees full lift history, not just recent sets
+- Bring the chat interface into the dashboard itself
