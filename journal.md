@@ -1,4 +1,4 @@
-## June 10
+## June 10 - Phase I: Project gets named "Atlas"
 
 What I did:
 - Built project structure
@@ -76,3 +76,27 @@ What stood out:
 Next step:
 - Fix the data window so Atlas sees full lift history, not just recent sets
 - Bring the chat interface into the dashboard itself
+
+### June 20 — Phase V: Atlas Becomes Fully Interactive
+
+What I did:
+- Fixed the data window bug in coach.py — Atlas now sees full lift history
+- Wired the AI coach directly into the Streamlit dashboard
+- Built a real chat interface in the browser — no more terminal needed
+- Asked Atlas about my bench progression and got a genuinely honest answer
+
+What I learned:
+- Streamlit blocks the terminal while running — need a second tab for other commands
+- Good prompt engineering + complete data = an AI that actually reasons,
+  not just agrees with you
+- A chat interface inside a dashboard feels like a real product, not a script
+
+What stood out:
+- I asked Atlas about a "fast increase" in my bench and it pushed back —
+  showed me the real 8-month timeline instead of just validating what I said
+- That's the moment this stopped feeling like a script and started feeling
+  like a coach with integrity
+
+Next step:
+- Look into deploying Atlas publicly via Streamlit Community Cloud
+- Build out plateau detection as a proactive feature, not just reactive chat

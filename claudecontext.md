@@ -111,3 +111,21 @@ Update the progress log and "next session goals" at the end of each session.
 - Add per-exercise history fetching so Atlas can see full lift timelines
 - Wire coach.py into the Streamlit dashboard — chat interface in browser
 - Audit raw Hevy data for inconsistencies
+
+### June 20 — Phase V: Atlas Becomes Fully Interactive
+- Fixed coach.py data window — full per-exercise history instead of last 100 rows
+- Confirmed fix works: Atlas now sees entire squat/bench timeline with real dates
+- Wired ask_atlas() into frontend/dashboard.py via sys.path import
+- Added Streamlit chat interface (st.chat_input + st.chat_message) at bottom of dashboard
+- Atlas is now fully interactive in the browser — no terminal required
+- Tested live: asked Atlas about bench progression (265→335 lbs claim)
+- Atlas corrected the framing with exact dates, didn't just agree — genuine
+  coaching behavior, not flattery
+- Confirmed: closing terminal/Ctrl+C stops the local server safely
+- Dashboard is currently local-only (localhost:8501) — not yet deployed publicly
+
+## Next session goals
+- Explore deploying to Streamlit Community Cloud for a public shareable URL
+- Add exercise selector dropdown to charts
+- Begin plateau detection algorithm (automated, not just chat-based)
+- Consider adding a "weekly check-in" feature — Atlas proactively summarizes the week
