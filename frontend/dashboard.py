@@ -1,6 +1,10 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from ai.coach import ask_atlas
 
 # Page config
 st.set_page_config(page_title="Project Atlas", page_icon="🏋️", layout="wide")
@@ -49,7 +53,7 @@ st.subheader("📈 Bench Press Progression")
 bench = pd.read_sql_query("""
     SELECT start_time as date, MAX(weight_lbs) as max_weight
     FROM sets
-    WHERE exercise_title = 'Bench Press (Barbell)'
+    WHERE exercise_title = 'Bench Press (Barbell)' 
     AND set_type = 'normal'
     AND weight_lbs > 0
     GROUP BY start_time
@@ -71,3 +75,26 @@ volume = pd.read_sql_query("""
 st.bar_chart(volume.set_index('title')['total_sets'])
 
 conn.close()
+
+# ── AI Coach Chat ──────────────────────────────────────────────
+st.divider()
+st.subheader("🤖 Ask Atlas")
+st.caption("Ask anything about your training — Atlas has your full history.")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("Ask Atlas a question..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Atlas is thinking..."):
+            response = ask_atlas(prompt)
+            st.markdown(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
