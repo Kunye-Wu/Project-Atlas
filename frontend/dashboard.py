@@ -3,6 +3,7 @@ import sqlite3
 import pandas as pd
 import sys
 import os
+from backend.plateau_detector import detect_plateaus
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ai.coach import ask_atlas
 
@@ -33,6 +34,22 @@ with col4:
     st.metric("Trap Bar Deadlift PR", "455 lbs")
 
 st.divider()
+
+# ── Plateau Detection ─────────────────────────────────────────
+st.divider()
+st.subheader("🔍 Plateau & Progress Monitor")
+
+plateau_data = detect_plateaus()
+cols = st.columns(3)
+col_idx = 0
+
+for lift, data in plateau_data.items():
+    with cols[col_idx % 3]:
+        if data['plateau']:
+            st.error(f"⚠️ {lift}\n\ne1RM: {data['first_e1rm']} → {data['last_e1rm']} lbs\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
+        else:
+            st.success(f"✅ {lift}\n\ne1RM: {data['first_e1rm']} → {data['last_e1rm']} lbs\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
+    col_idx += 1
 
 # ── Squat Progression Chart ───────────────────────────────────
 st.subheader("📈 Squat Progression")
