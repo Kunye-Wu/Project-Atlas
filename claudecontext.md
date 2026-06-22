@@ -129,3 +129,23 @@ Update the progress log and "next session goals" at the end of each session.
 - Add exercise selector dropdown to charts
 - Begin plateau detection algorithm (automated, not just chat-based)
 - Consider adding a "weekly check-in" feature — Atlas proactively summarizes the week
+
+### June 21 — Phase VI: Atlas Becomes Proactive
+- Built backend/plateau_detector.py — Epley formula e1RM trend analysis
+- Tracks 12 lifts: big 3, overhead, push press, pull ups, chin ups,
+  incline DB, hang clean, lat pulldown
+- Confirmed exact exercise names from database before building
+- Plateau threshold: <3% improvement over last 4 sessions = flagged
+- Results: Squat +11%, Bench +14.2%, OHP +11.7%, Lat Pulldown +6.7% — all green
+- Flagged: Chin Up Weighted -15.2%, Incline DB +2%, Hang Clean -17.5%
+- Hang Clean drop explained by wrist strain 2 weeks ago — important context
+  that data alone can't capture (false positive case study)
+- Wired plateau_detector into dashboard — visual green/red card grid
+- Dashboard now shows: PR cards, plateau monitor, progression charts, AI chat
+- Confirmed: VS Code play button won't launch Streamlit — terminal only for now
+
+## Next session goals
+- Deploy Atlas to Streamlit Community Cloud — get a public shareable URL
+- Add exercise selector dropdown to charts (pick any lift to visualize)
+- Wire plateau detection into coach.py context so Atlas can reference it
+- Consider weekly check-in feature — Atlas proactively summarizes the week

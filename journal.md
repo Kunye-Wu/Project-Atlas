@@ -100,3 +100,33 @@ What stood out:
 Next step:
 - Look into deploying Atlas publicly via Streamlit Community Cloud
 - Build out plateau detection as a proactive feature, not just reactive chat
+
+### June 21 — Phase VI: Atlas Becomes Proactive
+
+What I did:
+- Built plateau_detector.py using Epley formula for estimated 1RM
+- Queried the database to confirm exact exercise name spellings
+- Chose which lifts to track based on actual training priorities
+  (avoided bent over rows intentionally — protecting lower back)
+- Wired plateau detection into the Streamlit dashboard as visual cards
+- Full dashboard now live: PR cards, plateau monitor, charts, AI chat
+
+What I learned:
+- Data alone creates false positives — Hang Clean flagged as plateau
+  but real reason was wrist strain + forced deload
+- Athlete context is irreplaceable — the AI needs both numbers AND story
+- Confirmed: exact string matching matters for database queries
+  (Deadlift (Trap bar) vs Trap Bar — one character breaks everything)
+- VS Code play button ≠ terminal for Streamlit — different execution contexts
+
+What stood out:
+- The dashboard now tells a complete story without being asked anything
+- Green/red plateau cards make the product feel like a real coaching tool,
+  not just a data viewer
+- The Hang Clean false positive was actually a valuable lesson — future
+  Atlas should let athletes add context notes to their training logs
+
+Next step:
+- Deploy publicly via Streamlit Community Cloud
+- Add exercise selector dropdown
+- Wire plateau data into the AI coach context
