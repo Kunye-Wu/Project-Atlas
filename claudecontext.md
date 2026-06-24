@@ -149,3 +149,19 @@ Update the progress log and "next session goals" at the end of each session.
 - Add exercise selector dropdown to charts (pick any lift to visualize)
 - Wire plateau detection into coach.py context so Atlas can reference it
 - Consider weekly check-in feature — Atlas proactively summarizes the week
+
+### June 24 — Deployment Prep
+- Created requirements.txt with clean 5-line dependencies (no local paths)
+- Fixed dashboard.py imports — backend.plateau_detector now properly imported
+- sys.path fix confirmed working in dashboard.py lines 1-8
+- API key handling confirmed: os.getenv() works for both local .env
+  and Streamlit Cloud secrets manager — no code changes needed for deployment
+
+## Next session goals (PRIORITY #1)
+- Deploy to Streamlit Community Cloud — share.streamlit.io
+  Steps: sign in with GitHub → select Project-Atlas repo →
+  set main file as frontend/dashboard.py →
+  add ANTHROPIC_API_KEY in secrets manager → deploy
+- After deployment: wire plateau detection into coach.py context
+- Add exercise selector dropdown to charts
+- Add athlete notes feature (simple notes table in SQLite)

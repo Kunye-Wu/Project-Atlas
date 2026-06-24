@@ -130,3 +130,13 @@ Next step:
 - Deploy publicly via Streamlit Community Cloud
 - Add exercise selector dropdown
 - Wire plateau data into the AI coach context
+
+### June 24 — Atlas Deployment Prep
+
+What I did:
+- Generated and cleaned requirements.txt down to 5 essential packages
+- Fixed ModuleNotFoundError for backend.plateau_detector in dashboard.py
+- Confirmed API key setup works for Streamlit Cloud without code changes
+
+Next step:
+- Deploy Atlas publicly via share.streamlit.io — first thing tomorrow
