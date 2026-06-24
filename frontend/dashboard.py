@@ -3,9 +3,9 @@ import sqlite3
 import pandas as pd
 import sys
 import os
-from backend.plateau_detector import detect_plateaus
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ai.coach import ask_atlas
+from backend.plateau_detector import detect_plateaus
 
 # Page config
 st.set_page_config(page_title="Project Atlas", page_icon="🏋️", layout="wide")
