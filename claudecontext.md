@@ -165,3 +165,17 @@ Update the progress log and "next session goals" at the end of each session.
 - After deployment: wire plateau detection into coach.py context
 - Add exercise selector dropdown to charts
 - Add athlete notes feature (simple notes table in SQLite)
+
+### June 24 — Phase VII: Atlas Goes Public
+- Fixed requirements.txt — switched to >= version ranges for cloud compatibility
+- Deployed Atlas to Streamlit Community Cloud successfully
+- Public URL: https://project-atlas-8vwappjmulurmuarlbfbgcc.streamlit.app
+- ANTHROPIC_API_KEY added to Streamlit secrets manager securely
+- Full dashboard live publicly: PR cards, plateau monitor, charts, AI chat
+- Confirmed: atlas.db and workout_data.csv already in GitHub repo
+
+## Next session goals
+- Wire plateau detection into coach.py context
+- Add exercise selector dropdown to charts
+- Add athlete notes feature (simple SQLite notes table)
+- Start new chat channel — paste context file to continue

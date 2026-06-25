@@ -140,3 +140,49 @@ What I did:
 
 Next step:
 - Deploy Atlas publicly via share.streamlit.io — first thing tomorrow
+
+### June 24 — Phase VII: Atlas Goes Public
+
+What I did:
+- Fixed requirements.txt for cloud deployment compatibility
+- Deployed Atlas to Streamlit Community Cloud
+- Added API key securely via Streamlit secrets manager
+- Atlas is now live at a public URL
+
+What I learned:
+- pip freeze includes local file paths that break cloud deployment
+- Use >= instead of == in requirements.txt for cloud compatibility
+- Streamlit Cloud secrets manager replaces local .env files
+- First deploy almost always needs a troubleshoot — persistence pays off
+
+What stood out:
+- Seeing the exact same dashboard live on the internet that was
+  running locally on my Mac is a completely different feeling
+- Anyone can now open a URL and talk to Atlas
+
+Next step:
+- Start fresh chat channel tomorrow
+- Wire plateau detection into coach context
+- Add exercise selector and athlete notes feature### June 24 — Phase VII: Atlas Goes Public
+
+What I did:
+- Fixed requirements.txt for cloud deployment compatibility
+- Deployed Atlas to Streamlit Community Cloud
+- Added API key securely via Streamlit secrets manager
+- Atlas is now live at a public URL
+
+What I learned:
+- pip freeze includes local file paths that break cloud deployment
+- Use >= instead of == in requirements.txt for cloud compatibility
+- Streamlit Cloud secrets manager replaces local .env files
+- First deploy almost always needs a troubleshoot — persistence pays off
+
+What stood out:
+- Seeing the exact same dashboard live on the internet that was
+  running locally on my Mac is a completely different feeling
+- Anyone can now open a URL and talk to Atlas
+
+Next step:
+- Start fresh chat channel tomorrow
+- Wire plateau detection into coach context
+- Add exercise selector and athlete notes feature
