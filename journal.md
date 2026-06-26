@@ -186,3 +186,23 @@ Next step:
 - Start fresh chat channel tomorrow
 - Wire plateau detection into coach context
 - Add exercise selector and athlete notes feature
+
+### June 25 — Phase VIII: Atlas Gets Smarter
+
+What I did:
+- Wired plateau detection into Atlas's AI context
+- Built exercise selector dropdown (any lift, full history)
+- Built Athlete Notes (SQLite, persistent, dashboard-integrated)
+
+What I learned:
+- Always cd to project root before running git or streamlit commands
+- sys.path.insert with __file__ is the reliable way to handle imports across subdirectories
+- Direct GitHub file URLs work for fetching; repo homepage doesn't navigate
+
+What stood out:
+- 3 features in one session, all working first try after fixing the path issue
+- The exercise selector showing full squat history back to Sep 28 is genuinely useful
+
+Next step:
+- Wire notes into Atlas's coaching context
+- Weekly check-in feature

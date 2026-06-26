@@ -179,3 +179,20 @@ Update the progress log and "next session goals" at the end of each session.
 - Add exercise selector dropdown to charts
 - Add athlete notes feature (simple SQLite notes table)
 - Start new chat channel — paste context file to continue
+
+### June 25 — Phase VIII: Atlas Gets Smarter
+- Wired plateau detection into coach.py context — Atlas now sees all
+  plateau statuses before answering any question
+- Added sys.path fix to coach.py so backend imports work from any directory
+- Replaced separate Squat/Bench charts with unified exercise selector dropdown
+  — any lift in the database now visualizable
+- Added Athlete Notes feature — SQLite notes table (auto-created), text area,
+  save button, reverse-chronological display
+- All 3 features confirmed working locally at localhost:8501
+- Pushed to GitHub, Streamlit Cloud auto-deploying
+
+## Next session goals
+- Wire athlete notes into coach.py context so Atlas can reference them
+- Add "weekly check-in" feature — Atlas proactively summarizes the week
+- Consider PR detection logic — highlight true 1RM dates on progression charts
+- Explore conversation memory so Atlas remembers chat history within a session
