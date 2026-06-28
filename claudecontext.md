@@ -215,3 +215,22 @@ Update the progress log and "next session goals" at the end of each session.
 - Consider adding delete/edit functionality to athlete notes
 - Explore exporting Atlas summaries (PDF or email)
 - Start thinking about next training block recommendation feature
+
+### June 28 — Phase X: Atlas Becomes Proactive
+- Built weekly check-in feature — get_weekly_checkin() in coach.py
+- Check-in pulls last 7 days, compares e1RM to prior week for major lifts,
+  checks recent athlete notes, references plateau status
+- Added Weekly Check-in section to dashboard — sits above plateau monitor,
+  Generate button + Export as .txt download
+- Added delete button (🗑) on each athlete note — one per row
+- Confirmed data freshness problem live: Atlas correctly reported no workouts
+  in last 7 days (data ends June 7) but still generated intelligent check-in
+  using trend data and plateau context — proves both the feature works AND
+  the data freshness problem needs solving
+- All features confirmed working locally, pushed to GitHub
+
+## Next session goals (PRIORITY #1)
+- CSV re-upload feature — button in dashboard lets user drop in fresh Hevy
+  export, Atlas rebuilds atlas.db automatically, no terminal needed
+- This directly solves the data freshness problem confirmed tonight
+- After that: README overhaul (architecture diagram, demo GIF, live link)

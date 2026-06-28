@@ -226,3 +226,25 @@ What stood out:
 
 Next step:
 - Weekly check-in feature
+
+### June 28 — Phase X: Atlas Becomes Proactive
+
+What I did:
+- Built weekly check-in — Atlas now initiates the conversation, not just responds
+- Added delete functionality to athlete notes
+- Added export to .txt for check-in summaries
+
+What I learned:
+- Data freshness problem is real and confirmed in live output
+- Atlas gave an intelligent response even with stale data — proves the
+  reasoning layer works, just needs fresh input
+- The check-in format (This Week / Key Lifts / Flags / Recommendation)
+  is the right structure — clear and actionable
+
+What stood out:
+- "Don't let one quiet week turn into two" — Atlas coaching tone is working
+- The feature works exactly as designed; the constraint is data, not logic
+
+Next step:
+- CSV re-upload feature — this is the unlock that makes Atlas genuinely useful
+  week over week, not just a one-time analysis tool
