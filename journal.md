@@ -206,3 +206,23 @@ What stood out:
 Next step:
 - Wire notes into Atlas's coaching context
 - Weekly check-in feature
+
+### June 27 — Phase IX: Atlas Gets Memory & Vision
+
+What I did:
+- Wired athlete notes into Atlas coaching context
+- Built conversation memory — Atlas now remembers what was said earlier in session
+- Built PR detection with Plotly — gold stars on every PR date on the chart
+
+What I learned:
+- Always restart Streamlit after changing imported modules (not just refresh)
+- pip3 install needed locally even if it's in requirements.txt (that's for cloud)
+- Plotly gives way more control than st.line_chart for overlays and interactivity
+
+What stood out:
+- The conversation memory test was genuinely impressive — Atlas reframed
+  the hang clean plateau as a recovery artifact once wrist context was given
+- Seeing gold stars land exactly on Apr 3 (420 lb squat PR) felt real
+
+Next step:
+- Weekly check-in feature

@@ -196,3 +196,22 @@ Update the progress log and "next session goals" at the end of each session.
 - Add "weekly check-in" feature — Atlas proactively summarizes the week
 - Consider PR detection logic — highlight true 1RM dates on progression charts
 - Explore conversation memory so Atlas remembers chat history within a session
+
+### June 27 — Phase IX: Atlas Gets Memory & Vision
+- Wired athlete notes into coach.py system prompt — Atlas now references
+  personal context (injuries, life factors) when answering questions
+- Added conversation memory — ask_atlas() now accepts chat_history parameter,
+  dashboard passes full session history so Atlas remembers prior exchanges
+- Added PR detection on progression charts — switched from st.line_chart to
+  Plotly, gold star markers on every PR date with hover tooltip showing
+  weight and date
+- Installed plotly locally, added plotly>=5.0.0 to requirements.txt
+- Tested conversation memory live: Atlas correctly reframed hang clean
+  plateau as recovery artifact after wrist strain context was provided
+- All features confirmed working locally, pushed to GitHub
+
+## Next session goals
+- Weekly check-in feature — Atlas proactively summarizes the week
+- Consider adding delete/edit functionality to athlete notes
+- Explore exporting Atlas summaries (PDF or email)
+- Start thinking about next training block recommendation feature
