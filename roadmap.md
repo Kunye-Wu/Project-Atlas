@@ -56,6 +56,14 @@ Goal: Production-quality coaching platform.
 - Agent 3: Recovery analyst
 - Agent 4: Head coach (combines all three)
 
+### README overhaul (NEW)
+- Architecture diagram
+- Feature list with screenshots
+- Demo GIF showing the dashboard live
+- Tech stack badges
+- Live link prominently at the top
+- "Built by Kevin Wu" with LinkedIn
+
 ## Resume Outcome (target: August 28)
 Built an AI-powered fitness coaching platform that analyzes workout data
 to generate personalized training recommendations, fatigue assessments,
