@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+import plotly.graph_objects as go
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -56,7 +57,6 @@ all_exercises = pd.read_sql_query("""
 
 exercise_list = all_exercises['exercise_title'].tolist()
 default_idx = exercise_list.index('Squat (Barbell)') if 'Squat (Barbell)' in exercise_list else 0
-
 selected_exercise = st.selectbox("Select an exercise:", exercise_list, index=default_idx)
 
 exercise_data = pd.read_sql_query(f"""
@@ -69,7 +69,48 @@ exercise_data = pd.read_sql_query(f"""
 """, conn)
 
 exercise_data['date'] = pd.to_datetime(exercise_data['date'], errors='coerce')
-st.line_chart(exercise_data.set_index('date')['max_weight'])
+exercise_data = exercise_data.dropna(subset=['date'])
+exercise_data = exercise_data.sort_values('date').reset_index(drop=True)
+
+# PR detection — mark any session where a new all-time max is set
+exercise_data['prev_max'] = exercise_data['max_weight'].shift(1).fillna(0)
+exercise_data['running_max'] = exercise_data['max_weight'].cummax()
+exercise_data['is_pr'] = exercise_data['max_weight'] > exercise_data['prev_max'].cummax()
+pr_points = exercise_data[exercise_data['is_pr']]
+
+fig = go.Figure()
+
+# Main progression line
+fig.add_trace(go.Scatter(
+    x=exercise_data['date'],
+    y=exercise_data['max_weight'],
+    mode='lines',
+    name='Max Weight',
+    line=dict(color='#4C9BE8', width=2)
+))
+
+# PR markers
+fig.add_trace(go.Scatter(
+    x=pr_points['date'],
+    y=pr_points['max_weight'],
+    mode='markers',
+    name='PR ⭐',
+    marker=dict(color='gold', size=10, symbol='star'),
+    text=[f"PR: {w} lbs" for w in pr_points['max_weight']],
+    hovertemplate='%{text}<br>%{x}<extra></extra>'
+))
+
+fig.update_layout(
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    xaxis=dict(showgrid=False),
+    yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
+    legend=dict(orientation='h', yanchor='bottom', y=1.02),
+    margin=dict(l=0, r=0, t=30, b=0),
+    height=400
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
@@ -88,7 +129,6 @@ st.divider()
 st.subheader("📝 Athlete Notes")
 st.caption("Log context Atlas can't see in the data — injuries, sleep, life stuff.")
 
-# Create notes table if it doesn't exist
 notes_conn = sqlite3.connect('data/atlas.db')
 notes_conn.execute("""
     CREATE TABLE IF NOT EXISTS athlete_notes (
@@ -99,7 +139,6 @@ notes_conn.execute("""
 """)
 notes_conn.commit()
 
-# Add new note
 new_note = st.text_area("Add a note:", placeholder="e.g. Wrist strain starting today. Skipping hang cleans for 2 weeks.")
 if st.button("Save Note"):
     if new_note.strip():
@@ -110,7 +149,6 @@ if st.button("Save Note"):
     else:
         st.warning("Note is empty.")
 
-# Display existing notes
 notes = pd.read_sql_query("SELECT created_at, note FROM athlete_notes ORDER BY created_at DESC", notes_conn)
 notes_conn.close()
 
@@ -140,6 +178,10 @@ if prompt := st.chat_input("Ask Atlas a question..."):
         st.markdown(prompt)
     with st.chat_message("assistant"):
         with st.spinner("Atlas is thinking..."):
-            response = ask_atlas(prompt)
+            history = [
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages[:-1]
+            ]
+            response = ask_atlas(prompt, chat_history=history)
             st.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})

@@ -62,12 +62,31 @@ def get_training_summary():
     plateau_summary = "\n".join(plateau_lines)
 
     lift_history_text = "\n\n".join([f"=== {lift} full history ===\n{hist}" for lift, hist in lift_histories.items()])
-    return lift_history_text, prs.to_string(index=False), recent_volume.to_string(index=False), plateau_summary
+
+    # Fetch athlete notes
+    notes_conn = sqlite3.connect('data/atlas.db')
+    notes_df = pd.read_sql_query("""
+        SELECT created_at, note
+        FROM athlete_notes
+        ORDER BY created_at DESC
+    """, notes_conn)
+    notes_conn.close()
+
+    if not notes_df.empty:
+        notes_lines = [f"  [{row['created_at'][:10]}] {row['note']}" for _, row in notes_df.iterrows()]
+        athlete_notes_text = "\n".join(notes_lines)
+    else:
+        athlete_notes_text = "No notes logged yet."
+
+    return lift_history_text, prs.to_string(index=False), recent_volume.to_string(index=False), plateau_summary, athlete_notes_text
 
 
-def ask_atlas(question):
+def ask_atlas(question, chat_history=None):
     """Send a question to Claude with training data as context."""
-    lift_histories, pr_data, volume_data, plateau_summary = get_training_summary()
+    if chat_history is None:
+        chat_history = []
+
+    lift_histories, pr_data, volume_data, plateau_summary, athlete_notes_text = get_training_summary()
 
     system_prompt = f"""You are Atlas, an intelligent fitness coach analyzing real training data for Kevin, a serious lifter.
 
@@ -80,16 +99,21 @@ Here is Kevin's training volume by workout type (all-time, total sets and sessio
 Here is the current plateau status for Kevin's tracked lifts (based on estimated 1RM trend over last 4 sessions):
 {plateau_summary}
 
+Here are Kevin's athlete notes — personal context he's logged that the data can't capture (injuries, life factors, subjective feelings):
+{athlete_notes_text}
+
 Here is Kevin's complete training history for his major lifts:
 {lift_histories}
 
-Answer Kevin's question as a knowledgeable, direct strength coach would. Reference specific numbers and dates from his actual data when relevant. Be concise but insightful. Avoid generic fitness advice — ground everything in his real training history. When relevant, proactively reference the plateau status of specific lifts."""
+Answer Kevin's question as a knowledgeable, direct strength coach would. Reference specific numbers and dates from his actual data when relevant. Be concise but insightful. Avoid generic fitness advice — ground everything in his real training history. When relevant, proactively reference the plateau status of specific lifts. If athlete notes are relevant to the question, reference them explicitly."""
+
+    messages = chat_history + [{"role": "user", "content": question}]
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=500,
         system=system_prompt,
-        messages=[{"role": "user", "content": question}]
+        messages=messages
     )
 
     return message.content[0].text
