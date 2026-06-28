@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from ai.coach import ask_atlas
+from ai.coach import ask_atlas, get_weekly_checkin
 from backend.plateau_detector import detect_plateaus
 
 st.set_page_config(page_title="Project Atlas", page_icon="🏋️", layout="wide")
@@ -27,6 +27,31 @@ with col3:
     st.metric("Bench PR", "335 lbs")
 with col4:
     st.metric("Trap Bar Deadlift PR", "455 lbs")
+
+st.divider()
+
+# ── Weekly Check-in ───────────────────────────────────────────
+st.subheader("📋 Weekly Check-in")
+st.caption("Atlas proactively summarizes your last 7 days of training.")
+
+if "weekly_checkin" not in st.session_state:
+    st.session_state.weekly_checkin = None
+
+col_btn1, col_btn2 = st.columns([1, 5])
+with col_btn1:
+    if st.button("Generate Check-in"):
+        with st.spinner("Atlas is reviewing your week..."):
+            st.session_state.weekly_checkin = get_weekly_checkin()
+
+if st.session_state.weekly_checkin:
+    st.markdown(st.session_state.weekly_checkin)
+    with col_btn2:
+        st.download_button(
+            label="⬇ Export as .txt",
+            data=st.session_state.weekly_checkin,
+            file_name="atlas_weekly_checkin.txt",
+            mime="text/plain"
+        )
 
 st.divider()
 
@@ -72,15 +97,12 @@ exercise_data['date'] = pd.to_datetime(exercise_data['date'], errors='coerce')
 exercise_data = exercise_data.dropna(subset=['date'])
 exercise_data = exercise_data.sort_values('date').reset_index(drop=True)
 
-# PR detection — mark any session where a new all-time max is set
 exercise_data['prev_max'] = exercise_data['max_weight'].shift(1).fillna(0)
 exercise_data['running_max'] = exercise_data['max_weight'].cummax()
 exercise_data['is_pr'] = exercise_data['max_weight'] > exercise_data['prev_max'].cummax()
 pr_points = exercise_data[exercise_data['is_pr']]
 
 fig = go.Figure()
-
-# Main progression line
 fig.add_trace(go.Scatter(
     x=exercise_data['date'],
     y=exercise_data['max_weight'],
@@ -88,8 +110,6 @@ fig.add_trace(go.Scatter(
     name='Max Weight',
     line=dict(color='#4C9BE8', width=2)
 ))
-
-# PR markers
 fig.add_trace(go.Scatter(
     x=pr_points['date'],
     y=pr_points['max_weight'],
@@ -99,7 +119,6 @@ fig.add_trace(go.Scatter(
     text=[f"PR: {w} lbs" for w in pr_points['max_weight']],
     hovertemplate='%{text}<br>%{x}<extra></extra>'
 ))
-
 fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
@@ -109,7 +128,6 @@ fig.update_layout(
     margin=dict(l=0, r=0, t=30, b=0),
     height=400
 )
-
 st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
@@ -149,15 +167,22 @@ if st.button("Save Note"):
     else:
         st.warning("Note is empty.")
 
-notes = pd.read_sql_query("SELECT created_at, note FROM athlete_notes ORDER BY created_at DESC", notes_conn)
-notes_conn.close()
+notes = pd.read_sql_query("SELECT id, created_at, note FROM athlete_notes ORDER BY created_at DESC", notes_conn)
 
 if not notes.empty:
     for _, row in notes.iterrows():
-        st.markdown(f"**{row['created_at'][:10]}** — {row['note']}")
+        col_note, col_del = st.columns([10, 1])
+        with col_note:
+            st.markdown(f"**{row['created_at'][:10]}** — {row['note']}")
+        with col_del:
+            if st.button("🗑", key=f"del_{row['id']}"):
+                notes_conn.execute("DELETE FROM athlete_notes WHERE id = ?", (row['id'],))
+                notes_conn.commit()
+                st.rerun()
 else:
     st.caption("No notes yet.")
 
+notes_conn.close()
 conn.close()
 
 # ── AI Coach Chat ─────────────────────────────────────────────
