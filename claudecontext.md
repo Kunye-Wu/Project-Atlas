@@ -234,3 +234,49 @@ Update the progress log and "next session goals" at the end of each session.
   export, Atlas rebuilds atlas.db automatically, no terminal needed
 - This directly solves the data freshness problem confirmed tonight
 - After that: README overhaul (architecture diagram, demo GIF, live link)
+
+### June 29 — Phase XI: The Date Format Bug
+- Built CSV re-upload feature — file_uploader in dashboard, validates required
+  columns, rebuilds atlas.db on confirm
+- Tested live with fresh Hevy export (4,101 rows, through June 29 session)
+- Weekly check-in initially still reported "no workouts this week" despite
+  fresh data — investigated and found a critical bug
+
+## The bug
+- Hevy exports start_time as "22 Sep 2025, 18:41" (day-month-year text format)
+- SQLite stored this as plain text, not a real date type
+- date('now', '-7 days') comparisons in get_weekly_checkin() were doing
+  STRING comparison, not chronological comparison
+- This silently broke since the very first session — SQL's MAX(start_time)
+  was returning "9 Oct 2025" as the "latest" date because "9" sorts after
+  "2" lexically, even though Oct 2025 is older than June 2026
+- This bug existed in build_database.py since June 13 and affected every
+  date-based feature: plateau detection windows, weekly check-in, any future
+  date filtering — all were working on luck/coincidence until tonight
+
+## The fix
+- Added pd.to_datetime().dt.strftime('%Y-%m-%d %H:%M:%S') conversion in both
+  build_database.py and the CSV upload handler in dashboard.py
+- Rebuilt atlas.db from scratch with corrected ISO date format
+- Confirmed fix: weekly check-in correctly identified "4 workouts, 28 sets,
+  8 exercises" for the current week after rebuild
+- Confirmed fix referenced athlete notes correctly — reasoned that OHP/squat/
+  bench drops were a recovery artifact from a 6:58 mile + sleep disruption,
+  not a true regression — same Bayesian reasoning pattern as the June 27
+  hang clean conversation
+
+## Why this matters
+- This is the kind of bug that's invisible until you actually test with
+  real-time data — explains why everything "worked" during months of
+  development despite a fundamentally broken date comparison underneath
+- Good lesson: SQLite does not auto-parse dates; always store as ISO format
+  or comparisons silently fail/misbehave
+- CSV re-upload feature is now fully validated end-to-end: upload → rebuild →
+  correct date parsing → correct weekly analysis → correct note correlation
+
+## Next session goals
+- README overhaul (architecture diagram, demo GIF, live link, badges)
+- Goal tracking feature ("Road to 450 squat" — % complete, estimated timeline)
+- Consider Hevy API research for automatic sync (long-term, no manual export)
+- vision.md update: add "Atlas is the intelligence layer, not the logging
+  layer" as core product thesis

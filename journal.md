@@ -248,3 +248,40 @@ What stood out:
 Next step:
 - CSV re-upload feature — this is the unlock that makes Atlas genuinely useful
   week over week, not just a one-time analysis tool
+
+  ### June 29 — Phase XI: The Date Format Bug
+
+What I did:
+- Built and shipped CSV re-upload feature for fresh Hevy data
+- Found and fixed a date format bug that had been silently broken since
+  the database was first built on June 13
+- Rebuilt the database with proper ISO date formatting
+
+What I learned:
+- SQLite doesn't parse dates automatically — it compares date strings as
+  plain text unless you explicitly store them in ISO format (YYYY-MM-DD)
+- A bug like this can hide for weeks because most queries either don't
+  depend on precise date comparison, or happen to work by coincidence
+  with small date ranges
+- The bug was only exposed because real-time testing (today's actual
+  workout) created a scenario where the broken comparison produced a
+  visibly wrong result — historical data alone wouldn't have caught this
+- Debugging methodology that worked: isolate each layer (CSV → DB → query)
+  and check intermediate state at each step rather than assuming the
+  whole pipeline is fine because the final output once looked correct
+
+What stood out:
+- The moment I saw "9 Oct 2025" claimed as the most recent date when it's
+  clearly almost 9 months old — that's when the real cause became obvious
+- After the fix, watching the weekly check-in correctly reason through my
+  note about the mile run and sleep disruption felt like validation that
+  the underlying architecture is sound — the bug was in data plumbing,
+  not in the reasoning layer
+- This is a good story for the LinkedIn post eventually: not just "I built
+  a feature" but "I found and fixed a subtle bug that had been silently
+  corrupting every date-based calculation for weeks"
+
+Next step:
+- README overhaul
+- Goal tracking feature
+- Keep building toward August demo-ready state
