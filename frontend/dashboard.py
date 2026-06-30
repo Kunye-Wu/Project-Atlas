@@ -16,6 +16,37 @@ conn = sqlite3.connect('data/atlas.db')
 st.title("🏋️ Project Atlas")
 st.subheader("Your Personal Training Intelligence Dashboard")
 
+# ── CSV Re-upload ──────────────────────────────────────────────
+st.subheader("🔄 Update Training Data")
+st.caption("Export your latest workouts from Hevy and upload the CSV to refresh Atlas.")
+
+uploaded_file = st.file_uploader("Upload Hevy CSV export", type="csv")
+
+if uploaded_file is not None:
+    new_df = pd.read_csv(uploaded_file)
+
+    required_columns = {'title', 'start_time', 'exercise_title', 'set_type', 'weight_lbs', 'reps'}
+    missing = required_columns - set(new_df.columns)
+
+    if missing:
+        st.error(f"This CSV is missing required columns: {', '.join(missing)}. Upload a valid Hevy export.")
+    else:
+        if st.button("Confirm and Rebuild Database"):
+            # Convert start_time to ISO format so SQLite can sort/filter correctly
+            new_df['start_time'] = pd.to_datetime(new_df['start_time'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+
+            new_df.to_csv('data/workout_data.csv', index=False)
+
+            rebuild_conn = sqlite3.connect('data/atlas.db')
+            new_df.to_sql('sets', rebuild_conn, if_exists='replace', index=False)
+            rebuild_conn.close()
+
+            latest_date = pd.to_datetime(new_df['start_time'], errors='coerce').max()
+            st.success(f"Database updated! {len(new_df):,} sets loaded. Latest workout: {latest_date.strftime('%B %d, %Y')}")
+            st.rerun()
+
+st.divider()
+
 # ── Metric Cards ──────────────────────────────────────────────
 col1, col2, col3, col4 = st.columns(4)
 with col1:
