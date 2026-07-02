@@ -285,3 +285,31 @@ Next step:
 - README overhaul
 - Goal tracking feature
 - Keep building toward August demo-ready state
+
+### July 2 — Phase XII: Public Face + Goal Tracking
+
+What I did:
+- Wrote the README from scratch — badges, architecture, feature list,
+  tech stack table, running locally, live demo link
+- Built goal tracking — any exercise, progress bar, weekly rate, ETA
+
+What I learned:
+- A good README transforms how a project is perceived — same code,
+  completely different first impression
+- ETA forecasting from historical rate of progress is simple math but
+  feels genuinely useful when grounded in real data
+- "Calculating..." is better UX than showing a nonsensical negative ETA
+  when a lift is in plateau — handle edge cases gracefully
+
+What stood out:
+- OHP showing "Goal reached! 🎉" on first load — Atlas knew before I did
+- Deadlift at "Calculating..." correctly because it's in plateau territory
+- Seeing 5 goals stacked with progress bars, rates, and ETAs all at once
+  felt like a real product dashboard, not a student project
+
+Next step:
+- Wire goals into Atlas coaching context
+- Delete button for goals
+- Demo GIF for README
+- vision.md update
+- Start LinkedIn post structure
