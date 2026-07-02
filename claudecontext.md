@@ -280,3 +280,22 @@ Update the progress log and "next session goals" at the end of each session.
 - Consider Hevy API research for automatic sync (long-term, no manual export)
 - vision.md update: add "Atlas is the intelligence layer, not the logging
   layer" as core product thesis
+
+  ### July 2 — Phase XII: Public Face + Goal Tracking
+- Wrote full README.md — badges, architecture diagram, feature list, tech
+  stack table, running locally instructions, live demo link
+- Repo homepage now looks like a real product in 10 seconds
+- Built goal tracking feature — goals table in SQLite, any exercise,
+  progress bar, current PR vs target, lbs remaining, weekly rate of
+  progress from historical data, ETA in month/year
+- Multiple goals display simultaneously as stacked cards
+- OHP correctly detected as "Goal reached!" 🎉
+- Deadlift correctly showing "Calculating..." due to plateau/no positive rate
+- Squat: 420/445 lbs, 94.4%, ETA August 2026 at 3.6 lbs/week
+
+## Next session goals
+- Update vision.md — add "Atlas is the intelligence layer, not the logging layer"
+- Wire goals into coach.py context so Atlas knows your targets when coaching
+- Add delete button for goals (same pattern as athlete notes)
+- Demo GIF for README — screen record the dashboard in action
+- Start thinking about LinkedIn post structure
