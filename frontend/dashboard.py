@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import sys
 import os
+from datetime import datetime, timedelta
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ai.coach import ask_atlas, get_weekly_checkin
 from backend.plateau_detector import detect_plateaus
@@ -32,15 +33,11 @@ if uploaded_file is not None:
         st.error(f"This CSV is missing required columns: {', '.join(missing)}. Upload a valid Hevy export.")
     else:
         if st.button("Confirm and Rebuild Database"):
-            # Convert start_time to ISO format so SQLite can sort/filter correctly
             new_df['start_time'] = pd.to_datetime(new_df['start_time'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
-
             new_df.to_csv('data/workout_data.csv', index=False)
-
             rebuild_conn = sqlite3.connect('data/atlas.db')
             new_df.to_sql('sets', rebuild_conn, if_exists='replace', index=False)
             rebuild_conn.close()
-
             latest_date = pd.to_datetime(new_df['start_time'], errors='coerce').max()
             st.success(f"Database updated! {len(new_df):,} sets loaded. Latest workout: {latest_date.strftime('%B %d, %Y')}")
             st.rerun()
@@ -98,6 +95,117 @@ for lift, data in plateau_data.items():
         else:
             st.success(f"✅ {lift}\n\ne1RM: {data['first_e1rm']} → {data['last_e1rm']} lbs\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
     col_idx += 1
+
+st.divider()
+
+# ── Goal Tracking ─────────────────────────────────────────────
+st.subheader("🎯 Goal Tracking")
+st.caption("Set a target and Atlas will estimate when you'll get there based on your rate of progress.")
+
+# Create goals table if it doesn't exist
+goals_conn = sqlite3.connect('data/atlas.db')
+goals_conn.execute("""
+    CREATE TABLE IF NOT EXISTS goals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        exercise TEXT NOT NULL,
+        target_weight REAL NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+goals_conn.commit()
+
+# Add new goal
+all_exercises_for_goals = pd.read_sql_query("""
+    SELECT DISTINCT exercise_title FROM sets
+    WHERE set_type = 'normal' AND weight_lbs > 0
+    ORDER BY exercise_title
+""", conn)
+exercise_options = all_exercises_for_goals['exercise_title'].tolist()
+
+col_g1, col_g2, col_g3 = st.columns([3, 2, 1])
+with col_g1:
+    goal_exercise = st.selectbox("Exercise", exercise_options,
+        index=exercise_options.index('Squat (Barbell)') if 'Squat (Barbell)' in exercise_options else 0,
+        key="goal_exercise_select")
+with col_g2:
+    goal_target = st.number_input("Target weight (lbs)", min_value=1, max_value=2000, value=450, step=5)
+with col_g3:
+    st.write("")
+    st.write("")
+    if st.button("Set Goal"):
+        # Remove existing goal for same exercise before adding new one
+        goals_conn.execute("DELETE FROM goals WHERE exercise = ?", (goal_exercise,))
+        goals_conn.execute("INSERT INTO goals (exercise, target_weight) VALUES (?, ?)",
+            (goal_exercise, goal_target))
+        goals_conn.commit()
+        st.success(f"Goal set: {goal_exercise} → {goal_target} lbs")
+        st.rerun()
+
+# Display existing goals with progress
+goals = pd.read_sql_query("SELECT * FROM goals ORDER BY created_at DESC", goals_conn)
+goals_conn.close()
+
+if not goals.empty:
+    for _, goal in goals.iterrows():
+        exercise = goal['exercise']
+        target = goal['target_weight']
+
+        # Get current PR for this exercise
+        pr_result = pd.read_sql_query(f"""
+            SELECT MAX(weight_lbs) as pr
+            FROM sets
+            WHERE exercise_title = '{exercise}'
+            AND set_type = 'normal' AND weight_lbs > 0
+        """, conn)
+        current_pr = pr_result['pr'].iloc[0] if not pr_result.empty else 0
+
+        if current_pr is None:
+            continue
+
+        pct_complete = min((current_pr / target) * 100, 100)
+        lbs_remaining = max(target - current_pr, 0)
+
+        # Estimate rate of progress — lbs gained per week from PR history
+        pr_history = pd.read_sql_query(f"""
+            SELECT date(start_time) as date, MAX(weight_lbs) as max_weight
+            FROM sets
+            WHERE exercise_title = '{exercise}'
+            AND set_type = 'normal' AND weight_lbs > 0
+            GROUP BY date(start_time)
+            ORDER BY date
+        """, conn)
+
+        eta_str = "Unknown"
+        weekly_rate = None
+        if len(pr_history) >= 4:
+            pr_history['date'] = pd.to_datetime(pr_history['date'])
+            pr_history['running_max'] = pr_history['max_weight'].cummax()
+            first_pr = pr_history['running_max'].iloc[0]
+            last_pr = pr_history['running_max'].iloc[-1]
+            first_date = pr_history['date'].iloc[0]
+            last_date = pr_history['date'].iloc[-1]
+            weeks_elapsed = max((last_date - first_date).days / 7, 1)
+            weekly_rate = (last_pr - first_pr) / weeks_elapsed
+
+            if weekly_rate > 0 and lbs_remaining > 0:
+                weeks_to_goal = lbs_remaining / weekly_rate
+                eta_date = datetime.now() + timedelta(weeks=weeks_to_goal)
+                eta_str = eta_date.strftime("%B %Y")
+            elif lbs_remaining == 0:
+                eta_str = "Goal reached! 🎉"
+
+        # Display goal card
+        st.markdown(f"**{exercise}** — Target: {target} lbs")
+        col_prog, col_stats = st.columns([3, 2])
+        with col_prog:
+            st.progress(pct_complete / 100)
+        with col_stats:
+            rate_str = f"{weekly_rate:.1f} lbs/week" if weekly_rate and weekly_rate > 0 else "Calculating..."
+            st.markdown(f"**{current_pr} / {target} lbs** ({pct_complete:.1f}%) — "
+                       f"{lbs_remaining} lbs to go · {rate_str} · ETA: **{eta_str}**")
+        st.write("")
+else:
+    st.caption("No goals set yet. Add one above.")
 
 st.divider()
 
