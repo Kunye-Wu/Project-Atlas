@@ -78,7 +78,41 @@ def get_training_summary():
     else:
         athlete_notes_text = "No notes logged yet."
 
-    return lift_history_text, prs.to_string(index=False), recent_volume.to_string(index=False), plateau_summary, athlete_notes_text
+    # Fetch goals
+    try:
+        goals_conn = sqlite3.connect('data/atlas.db')
+        goals_df = pd.read_sql_query("""
+            SELECT exercise, target_weight FROM goals ORDER BY created_at DESC
+        """, goals_conn)
+        goals_conn.close()
+
+        if not goals_df.empty:
+            goal_lines = []
+            pr_conn = sqlite3.connect('data/atlas.db')
+            for _, goal in goals_df.iterrows():
+                exercise = goal['exercise']
+                target = goal['target_weight']
+                pr_result = pd.read_sql_query(f"""
+                    SELECT MAX(weight_lbs) as pr FROM sets
+                    WHERE exercise_title = '{exercise}'
+                    AND set_type = 'normal' AND weight_lbs > 0
+                """, pr_conn)
+                current_pr = pr_result['pr'].iloc[0] if not pr_result.empty else 0
+                if current_pr:
+                    pct = (current_pr / target) * 100
+                    lbs_remaining = max(target - current_pr, 0)
+                    if lbs_remaining == 0:
+                        goal_lines.append(f"  {exercise}: Goal {target} lbs — REACHED ✅")
+                    else:
+                        goal_lines.append(f"  {exercise}: Goal {target} lbs — Current PR {current_pr} lbs ({pct:.1f}% complete, {lbs_remaining} lbs remaining)")
+            pr_conn.close()
+            goals_text = "\n".join(goal_lines)
+        else:
+            goals_text = "No goals set yet."
+    except Exception:
+        goals_text = "No goals set yet."
+
+    return lift_history_text, prs.to_string(index=False), recent_volume.to_string(index=False), plateau_summary, athlete_notes_text, goals_text
 
 
 def get_weekly_checkin():
@@ -136,7 +170,6 @@ def get_weekly_checkin():
         sets_this_week = len(recent_sets)
         exercises_this_week = recent_sets['exercise_title'].nunique()
 
-        # e1RM comparison for major lifts
         major_lifts = ['Squat (Barbell)', 'Bench Press (Barbell)', 'Deadlift (Trap bar)', 'Overhead Press (Barbell)']
         lift_comparisons = []
         for lift in major_lifts:
@@ -164,13 +197,11 @@ Exercises trained: {exercises_this_week}
 Major lift e1RM this week vs prior week:
 {lift_summary}"""
 
-    # Recent notes
     if not recent_notes_df.empty:
         notes_text = "\n".join([f"  [{row['created_at'][:10]}] {row['note']}" for _, row in recent_notes_df.iterrows()])
     else:
         notes_text = "No notes logged in the last 14 days."
 
-    # Plateau status
     plateau_data = detect_plateaus()
     plateau_lines = []
     for lift, data in plateau_data.items():
@@ -218,7 +249,7 @@ def ask_atlas(question, chat_history=None):
     if chat_history is None:
         chat_history = []
 
-    lift_histories, pr_data, volume_data, plateau_summary, athlete_notes_text = get_training_summary()
+    lift_histories, pr_data, volume_data, plateau_summary, athlete_notes_text, goals_text = get_training_summary()
 
     system_prompt = f"""You are Atlas, an intelligent fitness coach analyzing real training data for Kevin, a serious lifter.
 
@@ -234,10 +265,13 @@ Here is the current plateau status for Kevin's tracked lifts (based on estimated
 Here are Kevin's athlete notes — personal context he's logged that the data can't capture (injuries, life factors, subjective feelings):
 {athlete_notes_text}
 
+Here are Kevin's current training goals:
+{goals_text}
+
 Here is Kevin's complete training history for his major lifts:
 {lift_histories}
 
-Answer Kevin's question as a knowledgeable, direct strength coach would. Reference specific numbers and dates from his actual data when relevant. Be concise but insightful. Avoid generic fitness advice — ground everything in his real training history. When relevant, proactively reference the plateau status of specific lifts. If athlete notes are relevant to the question, reference them explicitly."""
+Answer Kevin's question as a knowledgeable, direct strength coach would. Reference specific numbers and dates from his actual data when relevant. Be concise but insightful. Avoid generic fitness advice — ground everything in his real training history. When relevant, proactively reference the plateau status of specific lifts. If athlete notes are relevant to the question, reference them explicitly. When discussing a lift that has a goal set, reference the goal and how current progress relates to it."""
 
     messages = chat_history + [{"role": "user", "content": question}]
 
