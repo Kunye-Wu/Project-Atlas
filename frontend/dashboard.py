@@ -102,7 +102,6 @@ st.divider()
 st.subheader("🎯 Goal Tracking")
 st.caption("Set a target and Atlas will estimate when you'll get there based on your rate of progress.")
 
-# Create goals table if it doesn't exist
 goals_conn = sqlite3.connect('data/atlas.db')
 goals_conn.execute("""
     CREATE TABLE IF NOT EXISTS goals (
@@ -114,7 +113,6 @@ goals_conn.execute("""
 """)
 goals_conn.commit()
 
-# Add new goal
 all_exercises_for_goals = pd.read_sql_query("""
     SELECT DISTINCT exercise_title FROM sets
     WHERE set_type = 'normal' AND weight_lbs > 0
@@ -133,7 +131,6 @@ with col_g3:
     st.write("")
     st.write("")
     if st.button("Set Goal"):
-        # Remove existing goal for same exercise before adding new one
         goals_conn.execute("DELETE FROM goals WHERE exercise = ?", (goal_exercise,))
         goals_conn.execute("INSERT INTO goals (exercise, target_weight) VALUES (?, ?)",
             (goal_exercise, goal_target))
@@ -141,7 +138,6 @@ with col_g3:
         st.success(f"Goal set: {goal_exercise} → {goal_target} lbs")
         st.rerun()
 
-# Display existing goals with progress
 goals = pd.read_sql_query("SELECT * FROM goals ORDER BY created_at DESC", goals_conn)
 goals_conn.close()
 
@@ -150,7 +146,6 @@ if not goals.empty:
         exercise = goal['exercise']
         target = goal['target_weight']
 
-        # Get current PR for this exercise
         pr_result = pd.read_sql_query(f"""
             SELECT MAX(weight_lbs) as pr
             FROM sets
@@ -165,7 +160,6 @@ if not goals.empty:
         pct_complete = min((current_pr / target) * 100, 100)
         lbs_remaining = max(target - current_pr, 0)
 
-        # Estimate rate of progress — lbs gained per week from PR history
         pr_history = pd.read_sql_query(f"""
             SELECT date(start_time) as date, MAX(weight_lbs) as max_weight
             FROM sets
@@ -194,8 +188,17 @@ if not goals.empty:
             elif lbs_remaining == 0:
                 eta_str = "Goal reached! 🎉"
 
-        # Display goal card
-        st.markdown(f"**{exercise}** — Target: {target} lbs")
+        # Display goal card with delete button
+        col_title, col_del = st.columns([11, 1])
+        with col_title:
+            st.markdown(f"**{exercise}** — Target: {target} lbs")
+        with col_del:
+            if st.button("🗑", key=f"del_goal_{int(goal['id'])}"):
+                del_conn = sqlite3.connect('data/atlas.db')
+                del_conn.execute("DELETE FROM goals WHERE id = ?", (int(goal['id']),))
+                del_conn.commit()
+                del_conn.close()
+                st.rerun()
         col_prog, col_stats = st.columns([3, 2])
         with col_prog:
             st.progress(pct_complete / 100)
@@ -227,7 +230,7 @@ exercise_data = pd.read_sql_query(f"""
     SELECT start_time as date, MAX(weight_lbs) as max_weight
     FROM sets
     WHERE exercise_title = '{selected_exercise}'
-    AND set_type = 'normal' AND weight_lbs > 0
+    AND set_time = 'normal' AND weight_lbs > 0
     GROUP BY date
     ORDER BY date
 """, conn)
