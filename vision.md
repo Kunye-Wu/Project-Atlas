@@ -8,6 +8,7 @@ Every fitness app on the market is a data recorder. They log what happened. None
 
 ## Mission
 Build an intelligent fitness agent that trains alongside the user — one that understands training load, recovery patterns, and performance trends well enough to answer the questions a real coach would answer.
+Atlas is the intelligence layer, not the logging layer.
 
 ## What Atlas does differently
 Atlas is not a tracker. It is an interpreter.
