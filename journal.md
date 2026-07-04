@@ -313,3 +313,25 @@ Next step:
 - Demo GIF for README
 - vision.md update
 - Start LinkedIn post structure
+
+### July 3 — Phase XIII: Goals Wired + Vision Sharpened
+
+What I did:
+- Wired training goals into Atlas's coaching context
+- Added delete button for goals
+- Fixed a silent typo bug in the exercise chart query
+- Added the product thesis line to vision.md
+
+What I learned:
+- Browser cache can make GitHub look stale even when the actual
+  file is correct — always verify with curl before debugging further
+- Small context additions to the system prompt (goals) meaningfully
+  change how Atlas coaches — it now knows what you're working toward
+
+What stood out:
+- Atlas can now answer "am I on track for 450 squat?" with real data
+- vision.md now has the line that defines the whole product strategy
+
+Next step:
+- Demo GIF for README
+- LinkedIn post structure

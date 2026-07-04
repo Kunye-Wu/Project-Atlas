@@ -299,3 +299,21 @@ Update the progress log and "next session goals" at the end of each session.
 - Add delete button for goals (same pattern as athlete notes)
 - Demo GIF for README — screen record the dashboard in action
 - Start thinking about LinkedIn post structure
+
+### July 3 — Phase XIII: Goals Wired + Vision Sharpened
+- Wired goals into coach.py context — get_training_summary() now fetches
+  goals table, calculates % complete and lbs remaining per goal, passes
+  to Atlas system prompt so it references targets when coaching
+- ask_atlas() now unpacks 6 return values including goals_text
+- Added delete button (🗑) to each goal card — same pattern as athlete notes
+- Fixed typo in exercise progression query: set_time → set_type
+- Updated vision.md — added "Atlas is the intelligence layer, not the
+  logging layer" as line 11, right after Mission statement
+- Confirmed GitHub sync issue was browser cache — all files confirmed
+  correct via curl (dashboard.py = 350 lines on GitHub)
+
+## Next session goals
+- Demo GIF for README — screen record dashboard in action
+- Start LinkedIn post structure
+- Explore Hevy API for automatic data sync
+- Consider next training block recommendation feature
