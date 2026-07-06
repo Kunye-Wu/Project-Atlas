@@ -50,11 +50,23 @@ with col1:
     total_sets = pd.read_sql_query("SELECT COUNT(*) as count FROM sets WHERE set_type='normal'", conn).iloc[0]['count']
     st.metric("Total Sets Logged", f"{total_sets:,}")
 with col2:
-    st.metric("Squat PR", "420 lbs")
+    squat_pr = pd.read_sql_query("""
+        SELECT MAX(weight_lbs) as pr FROM sets
+        WHERE exercise_title = 'Squat (Barbell)' AND set_type = 'normal'
+    """, conn).iloc[0]['pr']
+    st.metric("Squat PR", f"{int(squat_pr)} lbs")
 with col3:
-    st.metric("Bench PR", "335 lbs")
+    bench_pr = pd.read_sql_query("""
+        SELECT MAX(weight_lbs) as pr FROM sets
+        WHERE exercise_title = 'Bench Press (Barbell)' AND set_type = 'normal'
+    """, conn).iloc[0]['pr']
+    st.metric("Bench PR", f"{int(bench_pr)} lbs")
 with col4:
-    st.metric("Trap Bar Deadlift PR", "455 lbs")
+    deadlift_pr = pd.read_sql_query("""
+        SELECT MAX(weight_lbs) as pr FROM sets
+        WHERE exercise_title = 'Deadlift (Trap bar)' AND set_type = 'normal'
+    """, conn).iloc[0]['pr']
+    st.metric("Trap Bar Deadlift PR", f"{int(deadlift_pr)} lbs")
 
 st.divider()
 
@@ -230,7 +242,7 @@ exercise_data = pd.read_sql_query(f"""
     SELECT start_time as date, MAX(weight_lbs) as max_weight
     FROM sets
     WHERE exercise_title = '{selected_exercise}'
-    AND set_time = 'normal' AND weight_lbs > 0
+    AND set_type = 'normal' AND weight_lbs > 0
     GROUP BY date
     ORDER BY date
 """, conn)

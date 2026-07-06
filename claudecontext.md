@@ -317,3 +317,18 @@ Update the progress log and "next session goals" at the end of each session.
 - Start LinkedIn post structure
 - Explore Hevy API for automatic data sync
 - Consider next training block recommendation feature
+
+### July 5 — Phase XIV: Demo GIF + PR Cards Go Live
+- Fixed PR metric cards — now pull dynamically from database (no hardcoded values)
+- Confirmed 475 lb Trap Bar Deadlift PR in live data (July 5 session)
+- Fixed set_time → set_type typo in exercise progression query
+- Recorded 3:35 demo video of full Atlas dashboard
+- Converted to GIF with ffmpeg (8.9MB, under GitHub 10MB limit)
+- Added assets/atlas_demo.gif to repo
+- Added GIF link to README — now autoplays on GitHub repo homepage
+
+## Next session goals
+- Start LinkedIn post draft
+- Push remaining uncommitted files (atlas.db, workout_data.csv, dashboard.py)
+- Explore Hevy API for automatic sync
+- Next training block recommendation feature

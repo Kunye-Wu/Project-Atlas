@@ -335,3 +335,28 @@ What stood out:
 Next step:
 - Demo GIF for README
 - LinkedIn post structure
+
+### July 5 — Phase XIV: Demo GIF + PR Cards Go Live
+
+What I did:
+- Fixed PR metric cards to pull dynamically from database
+- Confirmed 475 lb Trap Bar Deadlift PR in live data
+- Fixed set_time → set_type typo in exercise chart query
+- Recorded 3:35 demo of full Atlas dashboard
+- Converted to GIF with ffmpeg, compressed to 8.9MB
+- Added GIF to repo and linked in README — autoplays on GitHub homepage
+
+What I learned:
+- Screen recordings saved to Photos need to be exported before terminal can access them
+- ffmpeg spaces-in-filename issue: rename the file first, then convert
+- GitHub has a 10MB file limit — compress GIFs before pushing
+- Dynamic SQL for metric cards is always better than hardcoded values
+
+What stood out:
+- Seeing the GIF autoplay on the GitHub repo homepage for the first time
+- The repo now tells the full story without anyone having to run the code
+- 475 lb trap bar PR on the same day it shows up live in Atlas — perfect timing
+
+Next step:
+- LinkedIn post draft
+- Fresh channel — this one is at the image limit
