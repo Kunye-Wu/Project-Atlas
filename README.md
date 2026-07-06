@@ -2,6 +2,8 @@
 
 > **Atlas is an AI-powered strength coaching platform that interprets your training data — not just tracks it.**
 
+![Atlas Demo](assets/atlas_demo.gif) 
+
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit)](https://project-atlas-8vwappjmulurmuarlbfbgcc.streamlit.app) 
 [![Python](https://img.shields.io/badge/Python-3.9-3776AB?style=for-the-badge&logo=python)](https://python.org)
 [![Claude API](https://img.shields.io/badge/AI-Claude%20API-black?style=for-the-badge)](https://anthropic.com)
