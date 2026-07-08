@@ -332,3 +332,38 @@ Update the progress log and "next session goals" at the end of each session.
 - Push remaining uncommitted files (atlas.db, workout_data.csv, dashboard.py)
 - Explore Hevy API for automatic sync
 - Next training block recommendation feature
+
+### July 7 — Project Atlas: Complete
+
+- LinkedIn post published — 98+ impressions within minutes of posting
+- Resume updated with full Project Atlas section (7 bullets, bug story, journal mention)
+- Added Plotly, Pandas, Git/GitHub to Skills section
+- Final GitHub push — all code up to date on main branch
+- Project Atlas is complete as a summer independent project
+
+## What was built (June 10 – July 7, 2026)
+- Full-stack AI coaching platform — Streamlit, Python, SQLite, Claude API
+- 4,100+ real training sets ingested from Hevy (Sep 2025 – Jul 2026)
+- Plateau detection (Epley e1RM, 12 lifts, green/red dashboard cards)
+- Conversational AI coach with full training history context
+- Athlete notes — personal context wired into coaching reasoning
+- Conversation memory — real back-and-forth coaching sessions
+- Weekly proactive check-in — Atlas initiates, not just responds
+- Goal tracking — progress bars, weekly rate, ETA forecasting
+- CSV re-upload — live data sync from Hevy export
+- PR detection — gold star markers on Plotly progression charts
+- Dynamic PR metric cards — pull from database, update on sync
+- Professional README with badges, architecture, live demo link
+- Demo GIF (3:35, 8.9MB) autoplaying on GitHub repo homepage
+- Public deployment: project-atlas-8vwappjmulurmuarlbfbgcc.streamlit.app
+- GitHub: github.com/Kunye-Wu/Project-Atlas
+
+## The bug that defined the project
+SQLite date string comparison bug — silently corrupting every date-based
+query from June 13 to June 29. Found by testing with real-time data.
+Fixed by converting all start_time values to ISO format on database build.
+This is the engineering story that belongs in every interview.
+
+## What Atlas became
+Not a fitness tracker. An interpreter.
+The intelligence layer, not the logging layer.

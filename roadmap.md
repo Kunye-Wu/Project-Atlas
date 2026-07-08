@@ -1,5 +1,5 @@
 # Project Atlas — Roadmap
-Last updated: June 27, 2026
+Last updated: July 7, 2026
 
 ## Phase 0 — Design (June 1–7) ✅ COMPLETE
 Goal: Design before coding.
@@ -10,62 +10,59 @@ Goal: Design before coding.
 
 ## Phase 1 — Foundation (June 8–30) ✅ COMPLETE (ahead of schedule)
 Goal: Working MVP.
-- Exported Hevy data (3,934 sets, Oct 2025 → June 2026)
-- Built SQLite database (atlas.db)
+- Exported Hevy data (4,100+ sets, Sep 2025 → Jul 2026)
+- Built SQLite database (atlas.db) with ISO date formatting
 - Built Streamlit dashboard with PR cards, progression charts, volume breakdown
 - Deployed publicly: https://project-atlas-8vwappjmulurmuarlbfbgcc.streamlit.app
 
-## Phase 2 — Intelligence (July 1–31) ✅ LARGELY COMPLETE (ahead of schedule)
+## Phase 2 — Intelligence (July 1–31) ✅ COMPLETE (finished July 7)
 Goal: AI Coach V1
 - Claude API integrated — Atlas answers questions about training
 - Plateau detection (Epley e1RM trend, 12 lifts tracked)
 - Athlete notes — personal context Atlas can reference
 - Conversation memory — real back-and-forth coaching sessions
-- PR detection — gold star markers on progression charts
-- Plateau status wired into AI context
-
-### Remaining Phase 2 goals
+- PR detection — gold star markers on Plotly progression charts
+- Plateau status, athlete notes, and goals wired into AI context
 - Weekly check-in — Atlas proactively summarizes the week
-- Next training block recommendation
-- Delete/edit athlete notes
+- Goal tracking — progress bars, weekly rate, ETA forecasting
+- CSV re-upload — live data sync from Hevy export, no terminal needed
+- Dynamic PR metric cards — pull from database, auto-update on sync
+- Delete buttons for goals and athlete notes
+- Fixed critical date format bug — ISO conversion for SQLite compatibility
 
-## Phase 3 — Make It Impressive (August 1–28)
+## Phase 3 — Make It Impressive ✅ COMPLETE (finished July 7)
 Goal: Production-quality coaching platform.
 
-### Data freshness (NEW — critical infrastructure)
-- CSV re-upload button in dashboard — user imports new Hevy export,
-  Atlas rebuilds database automatically
-- Explore Hevy API for automatic data sync (no manual export needed)
-- Long-term: in-app workout logging so Atlas becomes source of truth,
-  not dependent on Hevy exports
+### Data freshness ✅
+- CSV re-upload button — user imports new Hevy export, Atlas rebuilds instantly
+- ISO date format fix — all date-based queries now work correctly
+- Long-term: Hevy API integration (not yet built)
 
-### Coaching features
-- PR prediction — forecast when next PR attempt is viable
-- Training block generation — Atlas designs next 4-week program
-- Weekly reports — automated Sunday summary email or dashboard card
-- Performance forecasting — trajectory modeling for key lifts
+### Product quality ✅
+- Professional README — badges, architecture diagram, feature list, live demo link
+- Demo GIF (3:35) autoplaying on GitHub repo homepage
+- Dynamic PR cards pulling from live database
+- Exercise selector dropdown — any lift visualizable with PR markers
 
-### Product quality
-- Natural language interface improvements
-- Response quality tuning — more specific, less generic
-- Mobile-friendly dashboard layout
-
-### Stretch goal — Multi-agent architecture
-- Agent 1: Training analyst
-- Agent 2: Nutrition analyst
-- Agent 3: Recovery analyst
-- Agent 4: Head coach (combines all three)
-
-### README overhaul (NEW)
+### README overhaul ✅
 - Architecture diagram
-- Feature list with screenshots
-- Demo GIF showing the dashboard live
+- Full feature list
+- Demo GIF showing dashboard live
 - Tech stack badges
-- Live link prominently at the top
-- "Built by Kevin Wu" with LinkedIn
+- Live demo link + GitHub link
 
-## Resume Outcome (target: August 28)
-Built an AI-powered fitness coaching platform that analyzes workout data
-to generate personalized training recommendations, fatigue assessments,
-PR forecasts, and adaptive programming using LLM agents and predictive
-analytics. Deployed publicly with real multi-year training data.
+## Resume Outcome ✅ ACHIEVED (July 7, 2026)
+Built an AI-powered fitness coaching platform that analyzes 4,100+ real
+workout sets to generate personalized training recommendations, plateau
+detection, proactive weekly coaching, goal forecasting, and context-aware
+reasoning using the Claude API. Deployed publicly with a live demo GIF
+on GitHub. LinkedIn post published July 7, 2026.
+
+## What's Next (Future Phases)
+- Hevy API integration — automatic data sync, no manual CSV export
+- In-app workout logging — Atlas becomes the source of truth
+- Training block generation — Atlas designs next 4-week program
+- PR prediction — forecast when next PR attempt is viable
+- Mobile-friendly dashboard layout
+- Multi-agent architecture (Training + Nutrition + Recovery + Head Coach)
+- Goal tracking: "Road to 450 squat" — % complete, estimated timeline
