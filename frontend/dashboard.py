@@ -13,15 +13,39 @@ st.set_page_config(page_title="Project Atlas", page_icon="🏋️", layout="wide
 
 conn = sqlite3.connect('data/atlas.db')
 
+# Public demo is read-only. Set OWNER_MODE = "true" in Streamlit secrets
+# (or as an env var) to unlock upload, goals, notes and deletes.
+def _owner_mode():
+    try:
+        val = st.secrets.get("OWNER_MODE", "")
+    except Exception:
+        val = ""
+    return str(val or os.environ.get("OWNER_MODE", "")).lower() == "true"
+
+OWNER = _owner_mode()
+
 # ── Header ────────────────────────────────────────────────────
 st.title("🏋️ Project Atlas")
-st.subheader("Your Personal Training Intelligence Dashboard")
+st.subheader("An AI strength coach that interprets training data, not just tracks it")
 
-# ── CSV Re-upload ──────────────────────────────────────────────
-st.subheader("🔄 Update Training Data")
-st.caption("Export your latest workouts from Hevy and upload the CSV to refresh Atlas.")
+_range = pd.read_sql_query("SELECT MIN(start_time) AS a, MAX(start_time) AS b FROM sets", conn).iloc[0]
+_start = pd.to_datetime(_range['a']).strftime('%B %Y')
+_end = pd.to_datetime(_range['b']).strftime('%B %d, %Y')
+st.info(
+    f"**Project Atlas** is built by **Kevin Wu**. Everything below is Kevin's own lifting history, "
+    f"exported from the Hevy app ({_start} – {_end}). Atlas tracks **e1RM** (estimated one-rep max) "
+    f"trends to spot plateaus, forecasts goals, and uses **Claude** to turn the numbers plus Kevin's "
+    f"own training notes into check-ins and answers. Try **Generate Check-in** or ask Atlas a question at the bottom."
+)
+if not OWNER:
+    st.caption("🔒 Public demo — read-only. Data uploads, goals and notes are disabled.")
 
-uploaded_file = st.file_uploader("Upload Hevy CSV export", type="csv")
+# ── CSV Re-upload (owner only) ─────────────────────────────────
+uploaded_file = None
+if OWNER:
+    st.subheader("🔄 Update Training Data")
+    st.caption("Export your latest workouts from Hevy and upload the CSV to refresh Atlas.")
+    uploaded_file = st.file_uploader("Upload Hevy CSV export", type="csv")
 
 if uploaded_file is not None:
     new_df = pd.read_csv(uploaded_file)
@@ -132,23 +156,24 @@ all_exercises_for_goals = pd.read_sql_query("""
 """, conn)
 exercise_options = all_exercises_for_goals['exercise_title'].tolist()
 
-col_g1, col_g2, col_g3 = st.columns([3, 2, 1])
-with col_g1:
-    goal_exercise = st.selectbox("Exercise", exercise_options,
-        index=exercise_options.index('Squat (Barbell)') if 'Squat (Barbell)' in exercise_options else 0,
-        key="goal_exercise_select")
-with col_g2:
-    goal_target = st.number_input("Target weight (lbs)", min_value=1, max_value=2000, value=450, step=5)
-with col_g3:
-    st.write("")
-    st.write("")
-    if st.button("Set Goal"):
-        goals_conn.execute("DELETE FROM goals WHERE exercise = ?", (goal_exercise,))
-        goals_conn.execute("INSERT INTO goals (exercise, target_weight) VALUES (?, ?)",
-            (goal_exercise, goal_target))
-        goals_conn.commit()
-        st.success(f"Goal set: {goal_exercise} → {goal_target} lbs")
-        st.rerun()
+if OWNER:
+    col_g1, col_g2, col_g3 = st.columns([3, 2, 1])
+    with col_g1:
+        goal_exercise = st.selectbox("Exercise", exercise_options,
+            index=exercise_options.index('Squat (Barbell)') if 'Squat (Barbell)' in exercise_options else 0,
+            key="goal_exercise_select")
+    with col_g2:
+        goal_target = st.number_input("Target weight (lbs)", min_value=1, max_value=2000, value=450, step=5)
+    with col_g3:
+        st.write("")
+        st.write("")
+        if st.button("Set Goal"):
+            goals_conn.execute("DELETE FROM goals WHERE exercise = ?", (goal_exercise,))
+            goals_conn.execute("INSERT INTO goals (exercise, target_weight) VALUES (?, ?)",
+                (goal_exercise, goal_target))
+            goals_conn.commit()
+            st.success(f"Goal set: {goal_exercise} → {goal_target} lbs")
+            st.rerun()
 
 goals = pd.read_sql_query("SELECT * FROM goals ORDER BY created_at DESC", goals_conn)
 goals_conn.close()
@@ -205,7 +230,7 @@ if not goals.empty:
         with col_title:
             st.markdown(f"**{exercise}** — Target: {target} lbs")
         with col_del:
-            if st.button("🗑", key=f"del_goal_{int(goal['id'])}"):
+            if OWNER and st.button("🗑", key=f"del_goal_{int(goal['id'])}"):
                 del_conn = sqlite3.connect('data/atlas.db')
                 del_conn.execute("DELETE FROM goals WHERE id = ?", (int(goal['id']),))
                 del_conn.commit()
@@ -277,12 +302,15 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     xaxis=dict(showgrid=False),
-    yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
+    xaxis_title='Session date',
+    yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)', title='Top set weight (lbs)',
+               range=[max(exercise_data['max_weight'].min() * 0.9, 0),
+                      exercise_data['max_weight'].max() * 1.1] if not exercise_data.empty else None),
     legend=dict(orientation='h', yanchor='bottom', y=1.02),
     margin=dict(l=0, r=0, t=30, b=0),
     height=400
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 st.divider()
 
@@ -293,7 +321,24 @@ volume = pd.read_sql_query("""
     FROM sets WHERE set_type = 'normal'
     GROUP BY title ORDER BY total_sets DESC
 """, conn)
-st.bar_chart(volume.set_index('title')['total_sets'])
+vol_fig = go.Figure(go.Bar(
+    x=volume['title'].tolist(),
+    y=volume['total_sets'].astype(int).tolist(),
+    marker_color='#4C9BE8',
+    text=volume['total_sets'].astype(int).tolist(),
+    textposition='outside',
+    hovertemplate='%{x}<br>%{y:,} sets<extra></extra>'
+))
+vol_fig.update_layout(
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    yaxis=dict(range=[0, int(volume['total_sets'].max() * 1.15)] if not volume.empty else None,
+               title='Working sets', showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
+    xaxis=dict(title=None, tickangle=0, automargin=True),
+    margin=dict(l=0, r=0, t=20, b=0),
+    height=380
+)
+st.plotly_chart(vol_fig, width="stretch", key="volume_chart")
 
 st.divider()
 
@@ -311,8 +356,8 @@ notes_conn.execute("""
 """)
 notes_conn.commit()
 
-new_note = st.text_area("Add a note:", placeholder="e.g. Wrist strain starting today. Skipping hang cleans for 2 weeks.")
-if st.button("Save Note"):
+new_note = st.text_area("Add a note:", placeholder="e.g. Wrist strain starting today. Skipping hang cleans for 2 weeks.") if OWNER else ""
+if OWNER and st.button("Save Note"):
     if new_note.strip():
         notes_conn.execute("INSERT INTO athlete_notes (note) VALUES (?)", (new_note.strip(),))
         notes_conn.commit()
@@ -329,7 +374,7 @@ if not notes.empty:
         with col_note:
             st.markdown(f"**{row['created_at'][:10]}** — {row['note']}")
         with col_del:
-            if st.button("🗑", key=f"del_{row['id']}"):
+            if OWNER and st.button("🗑", key=f"del_{row['id']}"):
                 notes_conn.execute("DELETE FROM athlete_notes WHERE id = ?", (row['id'],))
                 notes_conn.commit()
                 st.rerun()

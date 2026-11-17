@@ -11,6 +11,19 @@ load_dotenv()
 
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
+
+def _finish(message):
+    """Return the reply text; if it hit the length cap, end it cleanly instead of mid-sentence."""
+    text = message.content[0].text
+    if message.stop_reason == "max_tokens":
+        cut = max(text.rfind(". "), text.rfind(".\n"), text.rfind("\n\n"))
+        if cut > 0:
+            text = text[:cut + 1]
+        if text.count("**") % 2:
+            text += "**"
+        text += "\n\n_(Answer shortened — ask a follow-up for more detail.)_"
+    return text
+
 def get_training_summary():
     """Pull comprehensive training data — full history per major lift, plus recent overall activity."""
     conn = sqlite3.connect('data/atlas.db')
@@ -236,12 +249,12 @@ Generate Kevin's weekly check-in."""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=500,
+        max_tokens=1500,
         system=system_prompt,
         messages=[{"role": "user", "content": user_prompt}]
     )
 
-    return message.content[0].text
+    return _finish(message)
 
 
 def ask_atlas(question, chat_history=None):
@@ -277,12 +290,12 @@ Answer Kevin's question as a knowledgeable, direct strength coach would. Referen
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=500,
+        max_tokens=1500,
         system=system_prompt,
         messages=messages
     )
 
-    return message.content[0].text
+    return _finish(message)
 
 
 if __name__ == "__main__":
