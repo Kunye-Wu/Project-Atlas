@@ -387,7 +387,7 @@ conn.close()
 # ── AI Coach Chat ─────────────────────────────────────────────
 st.divider()
 st.subheader("🤖 Ask Atlas")
-st.caption("Ask anything about your training — Atlas has your full history.")
+st.caption("Ask Atlas about Kevin's training — it coaches from Kevin's real data.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
