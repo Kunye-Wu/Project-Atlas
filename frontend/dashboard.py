@@ -126,10 +126,12 @@ cols = st.columns(3)
 col_idx = 0
 for lift, data in plateau_data.items():
     with cols[col_idx % 3]:
+        detail = (f"{data['label']}: {data['first_value']} → {data['last_value']} {data['unit']}"
+                  f"\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
         if data['plateau']:
-            st.error(f"⚠️ {lift}\n\ne1RM: {data['first_e1rm']} → {data['last_e1rm']} lbs\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
+            st.error(f"⚠️ {lift}\n\n{detail}")
         else:
-            st.success(f"✅ {lift}\n\ne1RM: {data['first_e1rm']} → {data['last_e1rm']} lbs\n\n{data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions")
+            st.success(f"✅ {lift}\n\n{detail}")
     col_idx += 1
 
 st.divider()

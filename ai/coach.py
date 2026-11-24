@@ -68,7 +68,7 @@ def get_training_summary():
     for lift, data in plateau_data.items():
         status = "⚠️ PLATEAU" if data['plateau'] else "✅ PROGRESSING"
         plateau_lines.append(
-            f"  {lift}: {status} | e1RM {data['first_e1rm']} → {data['last_e1rm']} lbs "
+            f"  {lift}: {status} | {data['label']} {data['first_value']} → {data['last_value']} {data['unit']} "
             f"({data['pct_change']:+.1f}% over {data['sessions_analyzed']} sessions, "
             f"{data['first_date']} → {data['last_date']})"
         )
@@ -272,7 +272,7 @@ Here are Kevin's personal records (top lifts by weight):
 Here is Kevin's training volume by workout type (all-time, total sets and sessions):
 {volume_data}
 
-Here is the current plateau status for Kevin's tracked lifts (based on estimated 1RM trend over last 4 sessions):
+Here is the current plateau status for Kevin's tracked lifts (based on the trend over the last 4 sessions: estimated 1RM for weighted lifts, best reps per session for bodyweight lifts):
 {plateau_summary}
 
 Here are Kevin's athlete notes — personal context he's logged that the data can't capture (injuries, life factors, subjective feelings):
